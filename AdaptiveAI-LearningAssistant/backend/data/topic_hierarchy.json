@@ -1,0 +1,20 @@
+{
+  "topics": [
+    {
+      "name": "Arrays",
+      "levels": ["Recognition", "Understanding", "Application", "Debugging"]
+    },
+    {
+      "name": "Stack",
+      "levels": ["Recognition", "Understanding", "Application", "Debugging"]
+    },
+    {
+      "name": "Queue",
+      "levels": ["Recognition", "Understanding", "Application", "Debugging"]
+    },
+    {
+      "name": "Linked List",
+      "levels": ["Recognition", "Understanding", "Application", "Debugging"]
+    }
+  ]
+}

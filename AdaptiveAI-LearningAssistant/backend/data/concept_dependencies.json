@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "Arrays": ["Basic syntax"],
+    "Stack": ["Arrays", "Functions"],
+    "Queue": ["Arrays", "Conditions"],
+    "Linked List": ["Pointers", "Dynamic memory"]
+  },
+  "relationship": {
+    "Arrays": "Foundation for ordered data structures.",
+    "Stack": "Builds on arrays and is used in recursion and parsing.",
+    "Queue": "Builds on arrays and is used in scheduling and traversal.",
+    "Linked List": "Builds on pointers and dynamic storage for flexible data structures."
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "difficulty_levels": {
+    "easy": "Recognition and basic understanding questions with direct answers.",
+    "medium": "Understanding and application questions that require short explanations or short program logic.",
+    "hard": "Application and debugging questions that require scenario analysis and code reasoning.",
+    "challenge": "Debugging and integrated reasoning questions with multiple steps and trade-offs."
+  },
+  "mapping": {
+    "Recognition": "easy",
+    "Understanding": "medium",
+    "Application": "hard",
+    "Debugging": "challenge"
+  }
+}

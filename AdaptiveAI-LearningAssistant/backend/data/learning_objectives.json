@@ -1,0 +1,26 @@
+{
+  "Arrays": {
+    "Recognition": "Identify array syntax, indexing, and common operations.",
+    "Understanding": "Explain how arrays store ordered sequences and how indexing works.",
+    "Application": "Use arrays to solve problems that require ordered collections and repeated access.",
+    "Debugging": "Find and fix off-by-one errors, invalid index access, and initialization issues.
+  },
+  "Stack": {
+    "Recognition": "Recognize stack operations like push, pop, and top.",
+    "Understanding": "Describe last-in, first-out behavior and common stack use cases.",
+    "Application": "Apply stack logic to solve problems such as expression evaluation or undo history.",
+    "Debugging": "Analyze stack-based code to identify incorrect push/pop order or underflow.
+  },
+  "Queue": {
+    "Recognition": "Identify queue operations such as enqueue and dequeue.",
+    "Understanding": "Explain first-in, first-out behavior and real-world queue models.",
+    "Application": "Use queues to manage sequential processing, scheduling, or breadth-first traversal.",
+    "Debugging": "Debug queue implementations for incorrect order, empty queue handling, and pointer updates.
+  },
+  "Linked List": {
+    "Recognition": "Recognize nodes, pointers, and basic linked list structure.",
+    "Understanding": "Explain how linked lists store values and manage connections between nodes.",
+    "Application": "Use linked lists for dynamic insertion, deletion, and traversal tasks.",
+    "Debugging": "Debug broken link pointers, null references, and traversal termination.
+  }
+}
