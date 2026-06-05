@@ -12,6 +12,8 @@ export default function QuestionScreen({ student, question, onSubmit, onCancel }
       topic: question.topic,
       level: question.level,
       question_id: question.id,
+      question_text: question.question,
+      options: question.options,
       answer,
       confidence,
       expected_answer: question.answer || "",

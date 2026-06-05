@@ -24,13 +24,23 @@ export default function ResultScreen({ result, onContinue, onDashboard }) {
             </div>
           )}
         </div>
-        <div className="mt-6 flex gap-4 flex-wrap">
-          <button className="rounded-2xl bg-cyan-500 px-5 py-3 font-semibold text-slate-950 hover:bg-cyan-400" onClick={onContinue}>
-            Continue
-          </button>
-          <button className="rounded-2xl border border-slate-700 px-5 py-3 text-slate-200 hover:border-cyan-500" onClick={onDashboard}>
-            Back to Dashboard
-          </button>
+        <div className="mt-6 space-y-4">
+          {result.evaluation && (
+            <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4">
+              <h3 className="font-semibold text-slate-100">Evaluation Summary</h3>
+              <p className="mt-2 text-slate-300">Status: {result.evaluation.label}</p>
+              <p className="text-slate-300">Confidence Score: {result.evaluation.confidence_score}%</p>
+              <p className="text-slate-300">Reason: {result.evaluation.reason}</p>
+            </div>
+          )}
+          <div className="flex gap-4 flex-wrap">
+            <button className="rounded-2xl bg-cyan-500 px-5 py-3 font-semibold text-slate-950 hover:bg-cyan-400" onClick={onContinue}>
+              Continue
+            </button>
+            <button className="rounded-2xl border border-slate-700 px-5 py-3 text-slate-200 hover:border-cyan-500" onClick={onDashboard}>
+              Back to Dashboard
+            </button>
+          </div>
         </div>
       </div>
     </div>

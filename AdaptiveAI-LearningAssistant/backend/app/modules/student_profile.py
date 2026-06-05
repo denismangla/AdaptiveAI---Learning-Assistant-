@@ -24,10 +24,14 @@ def create_student_profile(name: str) -> Dict:
         "scores": DEFAULT_SCORES.copy(),
         "attempt_counters": DEFAULT_COUNTERS.copy(),
         "average_confidence": 0.0,
+        "average_confidence_score": 0.0,
+        "confidence_score_total": 0,
+        "confidence_score_count": 0,
         "confidence_counts": {"Low": 0, "Medium": 0, "High": 0},
         "weak_topics": [],
         "recommended_topics": [],
         "learning_history": [],
+        "overall_mastery_score": 0.0,
     }
 
 

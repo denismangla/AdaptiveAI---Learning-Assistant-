@@ -7,8 +7,6 @@ from app.modules.adaptive_engine import (
     evaluate_answer,
     select_next_question,
     update_student_profile,
-    calculate_mastery,
-    detect_weak_topics,
 )
 from app.modules.analytics import build_analytics_summary
 from app.modules.student_profile import load_profile, save_profile, create_student_profile
@@ -35,6 +33,8 @@ class AnswerRequest(BaseModel):
     topic: str
     level: str
     question_id: str
+    question_text: str = ""
+    options: list[str] = []
     answer: str
     confidence: str
     expected_answer: str
@@ -66,9 +66,18 @@ def answer(data: AnswerRequest):
     profile = load_profile(PROFILE_FILE, data.name)
     if not profile:
         raise HTTPException(status_code=404, detail="Student profile not found")
-    correctness = evaluate_answer(data.answer, data.expected_answer)
+
+    evaluation = evaluate_answer(
+        data.answer,
+        data.expected_answer,
+        data.options,
+        data.question_text,
+        data.level,
+    )
+    correctness = evaluation["correct"]
     response = {
         "correct": correctness,
+        "evaluation": evaluation,
         "hint": None,
         "explanation": None,
         "next_question": None,
@@ -81,7 +90,15 @@ def answer(data: AnswerRequest):
         response["hint"] = generate_hint(data.question_id, data.answer, data.confidence)
         response["explanation"] = generate_wrong_answer_explanation(data.question_id, data.answer)
         response["adaptive_explanation"] = generate_adaptive_explanation(False, data.confidence)
-    update_student_profile(profile, data.topic, data.level, correctness, data.confidence)
+
+    update_student_profile(
+        profile,
+        data.topic,
+        data.level,
+        correctness,
+        data.confidence,
+        evaluation.get("confidence_score", 0),
+    )
     save_profile(PROFILE_FILE, profile)
     next_question = select_next_question(profile, data.topic, data.level, correctness, data.confidence)
     response["next_question"] = next_question

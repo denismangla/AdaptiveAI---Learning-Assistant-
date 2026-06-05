@@ -2,8 +2,9 @@ import json
 import random
 from pathlib import Path
 from typing import Dict, Optional
+from app.modules.answer_evaluator import evaluate_answer as semantic_evaluate_answer
 from app.modules.confidence_tracker import update_confidence_counts
-from app.modules.weak_topic_detector import detect_weak_topics
+import app.modules.weak_topic_detector as weak_topic_detector
 
 LEVEL_WEIGHT = {
     "Recognition": 1,
@@ -21,8 +22,17 @@ RULES = {
 }
 
 
-def evaluate_answer(answer: str, expected_answer: str) -> bool:
-    return answer.strip().lower() == expected_answer.strip().lower()
+def evaluate_answer(
+    answer: str,
+    expected_answer: str,
+    options: Optional[list] = None,
+    question_text: str = "",
+    level: str = "",
+) -> Dict:
+    """
+    Use AI semantic evaluation for non-MCQ questions and exact matching for MCQ questions.
+    """
+    return semantic_evaluate_answer(answer, expected_answer, options, question_text, level)
 
 
 def calculate_mastery(profile: Dict) -> float:
@@ -33,14 +43,22 @@ def calculate_mastery(profile: Dict) -> float:
 
 
 def detect_weak_topics(profile: Dict) -> Dict:
-    weak = detect_weak_topics(profile)
+    weak = weak_topic_detector.detect_weak_topics(profile)
     profile["weak_topics"] = weak
     return {"weak_topics": weak}
 
 
-def update_student_profile(profile: Dict, topic: str, level: str, correct: bool, confidence: str):
+def update_student_profile(
+    profile: Dict,
+    topic: str,
+    level: str,
+    correct: bool,
+    selected_confidence: str,
+    confidence_score: int,
+):
     if topic not in profile["topics_attempted"]:
         profile["topics_attempted"].append(topic)
+
     counters = profile.setdefault("attempt_counters", {
         "Recognition": 0,
         "Understanding": 0,
@@ -53,21 +71,33 @@ def update_student_profile(profile: Dict, topic: str, level: str, correct: bool,
         "Application": 0.0,
         "Debugging": 0.0,
     })
-    level_name = level
-    counters[level_name] += 1
-    current = scores.get(level_name, 0.0)
-    score_delta = 25 if correct else -10
-    new_score = max(0, min(100, current + score_delta))
-    scores[level_name] = round((current + new_score) / 2, 2) if current else new_score
-    update_confidence_counts(profile, confidence)
+    counters[level] += 1
+    previous_attempts = counters[level]
+    entry_score = 100 if correct else 0
+    current_average = scores.get(level, 0.0)
+    scores[level] = round(
+        ((current_average * (previous_attempts - 1)) + entry_score) / previous_attempts,
+        2,
+    )
+
+    update_confidence_counts(profile, selected_confidence)
+    profile["confidence_score_total"] = profile.get("confidence_score_total", 0) + confidence_score
+    profile["confidence_score_count"] = profile.get("confidence_score_count", 0) + 1
+    profile["average_confidence_score"] = round(
+        profile["confidence_score_total"] / profile["confidence_score_count"], 2
+    )
+
     profile["learning_history"].append({
         "topic": topic,
         "level": level,
         "correct": correct,
-        "confidence": confidence,
+        "selected_confidence": selected_confidence,
+        "confidence_score": confidence_score,
     })
+
+    profile["overall_mastery_score"] = calculate_mastery(profile)
     profile["recommended_topics"] = recommend_topics(profile)
-    profile["weak_topics"] = detect_weak_topics(profile)
+    profile["weak_topics"] = weak_topic_detector.detect_weak_topics(profile)
 
 
 def select_next_question(profile: Dict, topic: str, previous_level: str, correct: bool, confidence: str) -> Dict:
@@ -78,7 +108,7 @@ def select_next_question(profile: Dict, topic: str, previous_level: str, correct
         next_level = levels[current_index + 1]
     elif rule == "easier_hint" and current_index > 0:
         next_level = levels[current_index - 1]
-    elif rule == "similar_explanation" or rule == "similar" or rule == "misconception":
+    elif rule in {"similar_explanation", "similar", "misconception"}:
         next_level = previous_level
     else:
         next_level = previous_level
