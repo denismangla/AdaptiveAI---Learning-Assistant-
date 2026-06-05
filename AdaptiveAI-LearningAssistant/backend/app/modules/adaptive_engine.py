@@ -5,6 +5,11 @@ from typing import Dict, Optional
 from app.modules.answer_evaluator import evaluate_answer as semantic_evaluate_answer
 from app.modules.confidence_tracker import update_confidence_counts
 import app.modules.weak_topic_detector as weak_topic_detector
+from app.modules.knowledge_graph import (
+    build_dependency_recommendations,
+    build_learning_path,
+    get_dependency_edges,
+)
 
 LEVEL_WEIGHT = {
     "Recognition": 1,
@@ -19,6 +24,12 @@ RULES = {
     (True, "Low"): "similar_explanation",
     (False, "High"): "misconception",
     (False, "Low"): "easier_hint",
+}
+
+CONFIDENCE_VALUES = {
+    "Low": 33,
+    "Medium": 66,
+    "High": 100,
 }
 
 
@@ -42,10 +53,18 @@ def calculate_mastery(profile: Dict) -> float:
     return round(sum(scores.values()) / len(scores), 2)
 
 
-def detect_weak_topics(profile: Dict) -> Dict:
-    weak = weak_topic_detector.detect_weak_topics(profile)
-    profile["weak_topics"] = weak
-    return {"weak_topics": weak}
+def record_recent_question(profile: Dict, question: Dict) -> None:
+    recent = profile.setdefault("recent_questions", [])
+    recent.append(
+        {
+            "id": question.get("id"),
+            "topic": question.get("topic"),
+            "level": question.get("level"),
+            "question": question.get("question"),
+        }
+    )
+    if len(recent) > 20:
+        profile["recent_questions"] = recent[-20:]
 
 
 def update_student_profile(
@@ -55,8 +74,9 @@ def update_student_profile(
     correct: bool,
     selected_confidence: str,
     confidence_score: int,
-):
-    if topic not in profile["topics_attempted"]:
+    misconception: str | None = None,
+) -> None:
+    if topic not in profile.setdefault("topics_attempted", []):
         profile["topics_attempted"].append(topic)
 
     counters = profile.setdefault("attempt_counters", {
@@ -71,7 +91,7 @@ def update_student_profile(
         "Application": 0.0,
         "Debugging": 0.0,
     })
-    counters[level] += 1
+    counters[level] = counters.get(level, 0) + 1
     previous_attempts = counters[level]
     entry_score = 100 if correct else 0
     current_average = scores.get(level, 0.0)
@@ -80,24 +100,39 @@ def update_student_profile(
         2,
     )
 
-    update_confidence_counts(profile, selected_confidence)
+    profile["confidence_counts"][selected_confidence] = profile["confidence_counts"].get(selected_confidence, 0) + 1
     profile["confidence_score_total"] = profile.get("confidence_score_total", 0) + confidence_score
     profile["confidence_score_count"] = profile.get("confidence_score_count", 0) + 1
     profile["average_confidence_score"] = round(
         profile["confidence_score_total"] / profile["confidence_score_count"], 2
     )
+    confidence_value = CONFIDENCE_VALUES.get(selected_confidence, 0)
+    previous_confidence = profile.get("average_confidence", 0.0)
+    profile["average_confidence"] = round(
+        ((previous_confidence * (profile["confidence_score_count"] - 1)) + confidence_value)
+        / profile["confidence_score_count"],
+        2,
+    )
 
-    profile["learning_history"].append({
+    profile.setdefault("misconceptions", [])
+    if misconception and misconception not in profile["misconceptions"]:
+        profile["misconceptions"].append(misconception)
+
+    history_entry = {
         "topic": topic,
         "level": level,
         "correct": correct,
         "selected_confidence": selected_confidence,
         "confidence_score": confidence_score,
-    })
+        "misconception": misconception,
+    }
+    profile.setdefault("learning_history", []).append(history_entry)
 
     profile["overall_mastery_score"] = calculate_mastery(profile)
-    profile["recommended_topics"] = recommend_topics(profile)
     profile["weak_topics"] = weak_topic_detector.detect_weak_topics(profile)
+    profile["recommended_topics"] = recommend_topics(profile)
+    profile["learning_path"] = build_learning_path(profile)
+    profile["knowledge_dependencies"] = get_dependency_edges()
 
 
 def select_next_question(profile: Dict, topic: str, previous_level: str, correct: bool, confidence: str) -> Dict:
@@ -119,7 +154,8 @@ def select_next_question(profile: Dict, topic: str, previous_level: str, correct
 def recommend_topics(profile: Dict) -> list:
     weak = profile.get("weak_topics", [])
     if weak:
-        return weak[:3]
+        recommendations = build_dependency_recommendations(weak)
+        return recommendations[:3] if recommendations else weak[:3]
     attempts = profile.get("topics_attempted", [])
     candidates = [topic for topic in ["Arrays", "Stack", "Queue", "Linked List"] if topic not in attempts]
     return candidates[:3] if candidates else ["Arrays", "Stack"]

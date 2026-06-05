@@ -2,11 +2,11 @@ from typing import Optional
 
 
 RULE_TEXT = {
-    (True, "High"): "Because you answered correctly with high confidence, the system will offer a more challenging follow-up question to stretch your understanding.",
-    (True, "Medium"): "Your answer is correct and your confidence is steady, so the next item will stay at a similar level of challenge.",
-    (True, "Low"): "You answered correctly but with low confidence, so the system provides an explanation and a similar practice question to reinforce the concept.",
-    (False, "High"): "A wrong answer with high confidence usually indicates a misconception, so the system offers a focused explanation to correct the misunderstanding.",
-    (False, "Low"): "A wrong answer with low confidence suggests you are still building the skill, so the assistant gives a hint and moves to a slightly easier follow-up.",
+    (True, "High"): "Great job! The next question will be a little more challenging to keep your understanding growing.",
+    (True, "Medium"): "Nice work — the next question will stay at a similar challenge so you can build confidence.",
+    (True, "Low"): "Correct answer! We'll reinforce the concept with another example so you feel more secure.",
+    (False, "High"): "You had strong confidence, so this response helps correct a likely misunderstanding with a clear explanation.",
+    (False, "Low"): "You're still building this skill, so we'll offer a helpful hint and a gentler follow-up question.",
 }
 
 

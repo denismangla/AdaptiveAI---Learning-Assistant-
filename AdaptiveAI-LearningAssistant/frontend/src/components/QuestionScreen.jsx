@@ -1,10 +1,13 @@
 import { useState } from "react";
+import ProgressBar from "./ProgressBar";
 
 const confidenceOptions = ["Low", "Medium", "High"];
 
 export default function QuestionScreen({ student, question, onSubmit, onCancel }) {
   const [answer, setAnswer] = useState("");
   const [confidence, setConfidence] = useState("Medium");
+  const questionNumber = (student.learning_history?.length || 0) + 1;
+  const masteryEstimate = Math.min(100, Math.max(0, Math.round(student.overall_mastery_score || 0)));
 
   const handleSubmit = () => {
     onSubmit({
@@ -26,7 +29,13 @@ export default function QuestionScreen({ student, question, onSubmit, onCancel }
         &larr; Return to dashboard
       </button>
       <div className="rounded-3xl border border-slate-700 bg-slate-950 p-6">
-        <h2 className="text-3xl font-semibold">{question.topic} - {question.level}</h2>
+        <h2 className="text-3xl font-semibold">{question.topic}</h2>
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-slate-400">Question {questionNumber}</p>
+          <div className="sm:w-1/3">
+            <ProgressBar label="Estimated Mastery" value={masteryEstimate} />
+          </div>
+        </div>
         <p className="mt-4 text-slate-300">{question.question}</p>
         {question.options.length > 0 && (
           <div className="mt-4 grid gap-3">

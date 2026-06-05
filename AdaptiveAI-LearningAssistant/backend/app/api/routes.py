@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from app.modules.question_generator import generate_question_for_topic
 from app.modules.adaptive_engine import (
     evaluate_answer,
+    record_recent_question,
     select_next_question,
     update_student_profile,
 )
@@ -13,6 +14,7 @@ from app.modules.student_profile import load_profile, save_profile, create_stude
 from app.modules.hint_generator import generate_hint
 from app.modules.explanation_generator import generate_explanation
 from app.modules.wrong_answer_explainer import generate_wrong_answer_explanation
+from app.modules.misconception_detector import detect_misconception
 from app.modules.adaptive_explanation_generator import generate_adaptive_explanation
 
 router = APIRouter()
@@ -58,7 +60,9 @@ def question(data: QuestionRequest):
     profile = load_profile(PROFILE_FILE, data.name)
     if not profile:
         raise HTTPException(status_code=404, detail="Student profile not found")
-    question_data = generate_question_for_topic(data.topic, data.level, data.difficulty)
+    question_data = generate_question_for_topic(data.topic, data.level, data.difficulty, profile)
+    record_recent_question(profile, question_data)
+    save_profile(PROFILE_FILE, profile)
     return question_data
 
 @router.post("/answer")
@@ -79,7 +83,9 @@ def answer(data: AnswerRequest):
         "correct": correctness,
         "evaluation": evaluation,
         "hint": None,
+        "hint_levels": None,
         "explanation": None,
+        "misconception": None,
         "next_question": None,
         "adaptive_explanation": None,
     }
@@ -87,8 +93,12 @@ def answer(data: AnswerRequest):
         response["explanation"] = generate_explanation(data.question_id, data.topic)
         response["adaptive_explanation"] = generate_adaptive_explanation(True, data.confidence)
     else:
-        response["hint"] = generate_hint(data.question_id, data.answer, data.confidence)
-        response["explanation"] = generate_wrong_answer_explanation(data.question_id, data.answer)
+        misunderstanding = detect_misconception(data.topic, data.question_text, data.answer)
+        hint_payload = generate_hint(data.question_id, data.answer, data.confidence)
+        response["hint"] = hint_payload.get("hint") if isinstance(hint_payload, dict) else hint_payload
+        response["hint_levels"] = hint_payload if isinstance(hint_payload, dict) else None
+        response["misconception"] = misunderstanding
+        response["explanation"] = generate_wrong_answer_explanation(data.question_id, data.answer, misunderstanding)
         response["adaptive_explanation"] = generate_adaptive_explanation(False, data.confidence)
 
     update_student_profile(
@@ -98,6 +108,7 @@ def answer(data: AnswerRequest):
         correctness,
         data.confidence,
         evaluation.get("confidence_score", 0),
+        response.get("misconception"),
     )
     save_profile(PROFILE_FILE, profile)
     next_question = select_next_question(profile, data.topic, data.level, correctness, data.confidence)

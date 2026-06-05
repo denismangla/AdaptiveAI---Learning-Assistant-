@@ -44,8 +44,8 @@ function App() {
     setView(VIEWS.TOPIC_SELECTION);
   };
 
-  const handleBeginTopic = async (topic, level) => {
-    const next = await requestQuestion({ name: student.name, topic, level, difficulty: "medium" });
+  const handleBeginTopic = async (topic) => {
+    const next = await requestQuestion({ name: student.name, topic, level: "Recognition", difficulty: "medium" });
     setQuestionPayload(next);
     setView(VIEWS.QUESTION);
   };

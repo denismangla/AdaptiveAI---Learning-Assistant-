@@ -20,3 +20,6 @@ def test_build_analytics_summary_contains_expected_fields():
     assert analytics["name"] == "StudentA"
     assert analytics["mastery"] == 66.25
     assert analytics["weak_topics"] == ["Debugging"]
+    assert analytics["learning_path"]
+    assert any("Debugging" in step for step in analytics["learning_path"])
+    assert analytics["misconceptions"] == []

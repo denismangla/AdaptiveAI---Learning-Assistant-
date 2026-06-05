@@ -1,13 +1,19 @@
+import ProgressBar from "./ProgressBar";
+
 export default function DashboardPage({ student, topics, onSelectTopic, onViewAnalytics }) {
+  const masteryValue = Math.min(100, Math.max(0, Math.round(student.overall_mastery_score || 0)));
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-3xl border border-slate-700 bg-slate-950 p-6">
           <h2 className="text-2xl font-semibold">Welcome back, {student.name}</h2>
           <p className="mt-3 text-slate-400">Topics attempted: {student.topics_attempted.length}</p>
-          <p className="mt-2 text-slate-400">Average Confidence: {student.average_confidence}</p>
+          <div className="mt-4">
+            <ProgressBar label="Overall Mastery" value={masteryValue} />
+          </div>
+          <p className="mt-3 text-slate-400">Average Confidence: {student.average_confidence}</p>
           <div className="mt-4 space-y-2">
-            <h3 className="text-lg font-medium">Recommendations</h3>
+            <h3 className="text-lg font-medium">Recommended Practice</h3>
             <div className="flex flex-wrap gap-2">
               {student.recommended_topics?.map((topic) => (
                 <span key={topic} className="rounded-full bg-slate-800 px-3 py-1 text-sm text-slate-200">
@@ -45,7 +51,7 @@ export default function DashboardPage({ student, topics, onSelectTopic, onViewAn
               onClick={() => onSelectTopic(topic.name)}
             >
               <h4 className="text-xl font-semibold">{topic.name}</h4>
-              <p className="mt-2 text-slate-400">Levels: {topic.levels.join(", ")}</p>
+              <p className="mt-2 text-slate-400">Start adaptive practice for this topic.</p>
             </button>
           ))}
         </div>

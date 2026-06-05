@@ -2,32 +2,113 @@
   "profiles": [
     {
       "name": "Denis Mangla",
-      "topics_attempted": [],
+      "topics_attempted": [
+        "Arrays"
+      ],
       "scores": {
-        "Recognition": 0.0,
+        "Recognition": 33.33,
         "Understanding": 0.0,
         "Application": 0.0,
         "Debugging": 0.0
       },
       "attempt_counters": {
-        "Recognition": 0,
-        "Understanding": 0,
+        "Recognition": 3,
+        "Understanding": 1,
         "Application": 0,
         "Debugging": 0
       },
-      "average_confidence": 0.0,
-      "average_confidence_score": 0.0,
-      "confidence_score_total": 0,
-      "confidence_score_count": 0,
+      "average_confidence": 34.25,
+      "average_confidence_score": 38.75,
+      "confidence_score_total": 155,
+      "confidence_score_count": 4,
       "confidence_counts": {
-        "Low": 0,
-        "Medium": 0,
-        "High": 0
+        "Low": 1,
+        "Medium": 2,
+        "High": 1
       },
-      "weak_topics": [],
-      "recommended_topics": [],
-      "learning_history": [],
-      "overall_mastery_score": 0.0
+      "weak_topics": [
+        "Arrays"
+      ],
+      "recommended_topics": [
+        "Reinforce Arrays fundamentals"
+      ],
+      "learning_history": [
+        {
+          "topic": "Arrays",
+          "level": "Recognition",
+          "correct": false,
+          "selected_confidence": "Medium",
+          "confidence_score": 0
+        },
+        {
+          "topic": "Arrays",
+          "level": "Recognition",
+          "correct": false,
+          "selected_confidence": "Medium",
+          "confidence_score": 32
+        },
+        {
+          "topic": "Arrays",
+          "level": "Recognition",
+          "correct": true,
+          "selected_confidence": "High",
+          "confidence_score": 100,
+          "misconception": null
+        },
+        {
+          "topic": "Arrays",
+          "level": "Understanding",
+          "correct": false,
+          "selected_confidence": "Low",
+          "confidence_score": 23,
+          "misconception": null
+        }
+      ],
+      "overall_mastery_score": 8.33,
+      "misconceptions": [],
+      "learning_path": [
+        "Review Arrays concepts.",
+        "Practice core operations for Arrays.",
+        "Attempt Arrays application questions."
+      ],
+      "recent_questions": [
+        {
+          "id": "fallback-Linked List-Recognition",
+          "topic": "Linked List",
+          "level": "Recognition",
+          "question": "Provide one core fact about Linked List at the Recognition level."
+        },
+        {
+          "id": "fallback-Arrays-Recognition",
+          "topic": "Arrays",
+          "level": "Recognition",
+          "question": "Which of the following is a valid way to declare an array in Python?"
+        }
+      ],
+      "knowledge_dependencies": [
+        {
+          "topic": "Arrays",
+          "depends_on": []
+        },
+        {
+          "topic": "Stack",
+          "depends_on": [
+            "Arrays"
+          ]
+        },
+        {
+          "topic": "Queue",
+          "depends_on": [
+            "Stack"
+          ]
+        },
+        {
+          "topic": "Linked List",
+          "depends_on": [
+            "Queue"
+          ]
+        }
+      ]
     }
   ]
 }

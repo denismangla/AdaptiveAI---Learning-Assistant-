@@ -40,7 +40,34 @@ def test_update_student_profile_changes_scores_and_history():
     assert profile["attempt_counters"]["Recognition"] == 1
     assert profile["learning_history"]
     assert profile["average_confidence_score"] == 92.0
+    assert profile["average_confidence"] == 66.0
     assert profile["overall_mastery_score"] == 25.0
+    assert profile["learning_path"]
+
+
+def test_update_student_profile_records_misconception():
+    profile = {
+        "name": "Test",
+        "topics_attempted": [],
+        "scores": {"Recognition": 0.0, "Understanding": 0.0, "Application": 0.0, "Debugging": 0.0},
+        "attempt_counters": {"Recognition": 0, "Understanding": 0, "Application": 0, "Debugging": 0},
+        "average_confidence": 0.0,
+        "average_confidence_score": 0.0,
+        "confidence_score_total": 0,
+        "confidence_score_count": 0,
+        "confidence_counts": {"Low": 0, "Medium": 0, "High": 0},
+        "weak_topics": [],
+        "recommended_topics": [],
+        "learning_history": [],
+        "overall_mastery_score": 0.0,
+        "misconceptions": [],
+        "learning_path": [],
+        "recent_questions": [],
+        "knowledge_dependencies": [],
+    }
+    update_student_profile(profile, "Stack", "Recognition", False, "High", 10, "Confuses FIFO and LIFO")
+    assert "Confuses FIFO and LIFO" in profile["misconceptions"]
+    assert profile["learning_history"][-1]["misconception"] == "Confuses FIFO and LIFO"
 
 
 def test_select_next_question_returns_question_dict():
