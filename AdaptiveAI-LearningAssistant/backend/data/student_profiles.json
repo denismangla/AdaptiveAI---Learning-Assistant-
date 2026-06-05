@@ -1,3 +1,33 @@
 {
-  "profiles": []
+  "profiles": [
+    {
+      "name": "Denis Mangla",
+      "topics_attempted": [],
+      "scores": {
+        "Recognition": 0.0,
+        "Understanding": 0.0,
+        "Application": 0.0,
+        "Debugging": 0.0
+      },
+      "attempt_counters": {
+        "Recognition": 0,
+        "Understanding": 0,
+        "Application": 0,
+        "Debugging": 0
+      },
+      "average_confidence": 0.0,
+      "average_confidence_score": 0.0,
+      "confidence_score_total": 0,
+      "confidence_score_count": 0,
+      "confidence_counts": {
+        "Low": 0,
+        "Medium": 0,
+        "High": 0
+      },
+      "weak_topics": [],
+      "recommended_topics": [],
+      "learning_history": [],
+      "overall_mastery_score": 0.0
+    }
+  ]
 }

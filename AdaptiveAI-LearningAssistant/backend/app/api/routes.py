@@ -16,7 +16,7 @@ from app.modules.wrong_answer_explainer import generate_wrong_answer_explanation
 from app.modules.adaptive_explanation_generator import generate_adaptive_explanation
 
 router = APIRouter()
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 PROFILE_FILE = DATA_DIR / "student_profiles.json"
 
 class LoginRequest(BaseModel):

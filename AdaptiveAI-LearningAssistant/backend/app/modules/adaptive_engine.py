@@ -126,7 +126,7 @@ def recommend_topics(profile: Dict) -> list:
 
 
 def load_question_sample(topic: str, level: str) -> Dict:
-    data_dir = Path(__file__).resolve().parents[1] / "data"
+    data_dir = Path(__file__).resolve().parents[2] / "data"
     fallback = {
         "id": f"sample-{topic}-{level}",
         "topic": topic,
